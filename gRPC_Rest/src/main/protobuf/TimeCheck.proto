@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package protobuf;
+
+// The greeting service definition.
+service checkLogs {
+  // Sends a greeting
+  rpc callLambda (lambdaRequest) returns (lambdaResponse) {}
+}
+
+// The request message containing the user's name.
+message lambdaRequest {
+  string timestamp = 1;
+  string delta = 2;
+  string functionalityType = 3;
+  string regex = 4;
+}
+
+// The response message containing the greetings
+message lambdaResponse {
+  string message = 1;
+}

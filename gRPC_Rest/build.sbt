@@ -18,6 +18,12 @@ val circeVersion = "0.14.1"
 
 resolvers += Resolver.jcenterRepo
 
+assembly / assemblyMergeStrategy := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}
+
+
 Compile / PB.targets := Seq(
   scalapb.gen() -> (Compile / sourceManaged).value / "scalapb"
 )

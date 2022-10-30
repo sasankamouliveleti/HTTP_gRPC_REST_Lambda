@@ -26,6 +26,9 @@ object gRPCClient {
     val client = gRPCClient(Constants.domainName, Constants.portNumber)
     try {
       val timeStamp = args(0)
+      if (!Constants.timeStampValidity(timeStamp)) {
+        throw IllegalArgumentException("Please provide timestamp in correct format %H:%M:%S.%f")
+      }
       client.sendRequest(timeStamp)
     } finally {
       client.shutdown()

@@ -4,6 +4,9 @@ import com.typesafe.config.{Config, ConfigFactory}
 import gRPC.gRPCClient.logger
 
 import scala.util.matching.Regex
+import java.text.SimpleDateFormat
+import java.util.Date
+import scala.util.{Failure, Success, Try}
 
 object Constants {
 
@@ -25,5 +28,13 @@ object Constants {
   def makeUrl(timestamp:String, delta: String, typeValue: String):String = {
     logger.info("The url built is " + lambdaEndpoint + timeStampString + timestamp + typeVal + typeValue + regex + mainPattern + deltaString + delta )
     lambdaEndpoint + timeStampString + timestamp + typeVal + typeValue + regex + mainPattern + deltaString + delta
+  }
+  def timeStampValidity(timestamp: String): Boolean ={
+    val formatter = new SimpleDateFormat("hh:mm:ss.SS")
+    val test = Try[Date](formatter.parse(timestamp))
+    test match {
+      case Success(date) => true
+      case Failure(exception) => false
+    }
   }
 }

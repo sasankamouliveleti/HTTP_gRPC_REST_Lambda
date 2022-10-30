@@ -22,6 +22,9 @@ object AkkaHttpClient {
     if(args.length == 2){
       val timeStamp = args(0)
       val deltaTime = args(1)
+      if(!Constants.timeStampValidity(timeStamp) || !Constants.timeStampValidity(deltaTime)){
+        throw IllegalArgumentException("Please provide timestamp and delta in correct format %H:%M:%S.%f")
+      }
       val invokeObject = new AkkaHttpClient()
       val invokedResult = invokeObject.callLambda(timeStamp, deltaTime)
       invokedResult.keys.foreach(value=>{

@@ -1,5 +1,0 @@
-package Finagle
-
-object finagleClient {
-
-}

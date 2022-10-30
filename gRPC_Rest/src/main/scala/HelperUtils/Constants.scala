@@ -18,17 +18,22 @@ object Constants {
   val deltaString: String = "&delta="
   val hashListString: String = "hashlist"
 
+
   /* Getting user defined attributes from config file*/
   val config: Config = ConfigFactory.load("application.conf").getConfig("applicationConfigParams")
   val mainPattern: Regex = Constants.config.getString("regex").r
   val lambdaEndpoint: String = config.getString("lambdaEndpoint")
   val portNumber: Int = config.getInt("portNumber")
   val domainName: String = config.getString("domainName")
+  val timeouttime: Int = config.getInt("timeouttime")
 
+  /* method to define the url to hit*/
   def makeUrl(timestamp:String, delta: String, typeValue: String):String = {
     logger.info("The url built is " + lambdaEndpoint + timeStampString + timestamp + typeVal + typeValue + regex + mainPattern + deltaString + delta )
     lambdaEndpoint + timeStampString + timestamp + typeVal + typeValue + regex + mainPattern + deltaString + delta
   }
+
+  /* Method to check the validity of the given input*/
   def timeStampValidity(timestamp: String): Boolean ={
     val formatter = new SimpleDateFormat("hh:mm:ss.SS")
     val test = Try[Date](formatter.parse(timestamp))

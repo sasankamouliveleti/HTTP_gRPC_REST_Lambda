@@ -18,15 +18,17 @@ import scala.concurrent.duration.*
 
 object AkkaHttpClient {
   def main(args: Array[String]): Unit = {
-    val logger = CreateLogger(classOf[AkkaHttpClient])
+    val logger = CreateLogger(classOf[AkkaHttpClient]) /* Creates a logger of class type AkkaHttClient*/
     if(args.length == 2){
-      val timeStamp = args(0)
-      val deltaTime = args(1)
+      val timeStamp = args(0) /* The argument 1 has timestamp*/
+      val deltaTime = args(1) /* The argument 2 has delta*/
+      /* Check the validity of input*/
       if(!Constants.timeStampValidity(timeStamp) || !Constants.timeStampValidity(deltaTime)){
         throw IllegalArgumentException("Please provide timestamp and delta in correct format %H:%M:%S.%f")
       }
-      val invokeObject = new AkkaHttpClient()
-      val invokedResult = invokeObject.callLambda(timeStamp, deltaTime)
+      val invokeObject = new AkkaHttpClient() /* Create an object of type akkahttpclient*/
+      val invokedResult = invokeObject.callLambda(timeStamp, deltaTime) /* Call the member method on the object*/
+      /* Log the results from the HTTP call*/
       invokedResult.keys.foreach(value=>{
         logger.info("************* The bool value of whether the timestamp is in s3 is " + value)
       })
@@ -34,7 +36,7 @@ object AkkaHttpClient {
         logger.info("************* The hash values are " + value)
       })
     }else{
-      throw IllegalArgumentException("Please provide timestamp and deltaTime")
+      throw IllegalArgumentException("Please provide timestamp and deltaTime") /* throw err if the arguments are not provided*/
     }
   }
 }
@@ -42,29 +44,30 @@ object AkkaHttpClient {
 class AkkaHttpClient  {
   val logger: Logger = CreateLogger(classOf[AkkaHttpClient])
 
+  /* Method which makes a call to the lambda function and returns the results in a Map of string and list*/
   def callLambda(timeStamp: String, deltaTime: String): Map[String, List[String]] = {
     
       implicit val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "SingleRequest")
-      // needed for the future flatMap/onComplete in the end
       implicit val executionContext: ExecutionContextExecutor = system.executionContext
 
-      val uriToCall = Constants.makeUrl(timeStamp, deltaTime, "2")
+      val uriToCall = Constants.makeUrl(timeStamp, deltaTime, "2") /* make the url to call */
+    
+      val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = uriToCall)) /* define the result object*/
 
-      //val uriToCall = "https://34ymq6qdql.execute-api.us-east-2.amazonaws.com/test/checktimestamp?" + "timestamp=" + timeStamp + "&type=2&regex=" + ".*" + "&delta=" + deltaTime
-      val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = uriToCall))
-
-      val timeout = 30000.millis
+      val timeout = Constants.timeouttime.millis /* defining the time out time for request to getthrough*/
+      /* Await for future to get results*/
       val responseAsString = Await.result(
         responseFuture.flatMap((resp: HttpResponse) => Unmarshal(resp.entity).to[String]),
         timeout
       )
+      /* parse the result fetched from lambda*/
       val parseResult: Either[ParsingFailure, Json] = parse(responseAsString)
       val ans: Map[String, List[String]] = parseResult match {
         case Left(parsingError) =>
           throw new IllegalArgumentException(s"Invalid JSON object: ${parsingError.message}")
         case Right(json) =>
-          val booleanOfLogTimeStamp = json \\ Constants.boolTimeStamp
-          val hashList = json \\ Constants.hashListString
+          val booleanOfLogTimeStamp = json \\ Constants.boolTimeStamp /* extract the key boolTImestamp*/
+          val hashList = json \\ Constants.hashListString /* extract the key hashList*/
           val firstNumber: Option[Option[JsonNumber]] =
             booleanOfLogTimeStamp.collectFirst { case field => field.asNumber }
           logger.info("The result achieved from the lambda function is " + firstNumber.flatten.flatMap(_.toInt))
@@ -72,10 +75,10 @@ class AkkaHttpClient  {
           val listValue = hashList.map(value => {
             value.toString
           })
-          Map(firstNumber.flatten.flatMap(_.toInt).get.toString -> listValue)
+          Map(firstNumber.flatten.flatMap(_.toInt).get.toString -> listValue) /* return a map key string i.e boolval, and list of hashes*/
       }
       //logger.info("The ansValue from case is" + ans)
-      ans
+      ans 
   }
 
 }

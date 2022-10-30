@@ -18,6 +18,7 @@ import org.slf4j.Logger
 import scala.util.{Failure, Success}
 import scala.concurrent.duration.*
 
+/* Reference - https://scalapb.github.io/docs/grpc */
 object gRPCServer {
   /* Main method which gets the arguments*/
   def main(args: Array[String]):Unit = {
@@ -61,15 +62,15 @@ class gRPCServer(executionContext: ExecutionContext) { self =>
 
   /* class which implements the grpc method checklogs*/
   private class lambdaImpl extends checkLogsGrpc.checkLogs {
-    
+
     /* method calllambda which takes protobuf request and returns future response*/
     override def callLambda(req: lambdaRequest): Future[lambdaResponse] = {
 
       implicit val system: ActorSystem[Nothing] = ActorSystem(Behaviors.empty, "SingleRequest")
       implicit val executionContext: ExecutionContextExecutor = system.executionContext
-      
+
       val uriToCall = Constants.makeUrl(req.timestamp, "", "1") /* make the url to call*/
-      
+
       val responseFuture: Future[HttpResponse] = Http().singleRequest(HttpRequest(uri = uriToCall)) /* define the result object*/
 
       val timeout = 30000.millis /* defining the time out time for request to getthrough*/
@@ -78,6 +79,7 @@ class gRPCServer(executionContext: ExecutionContext) { self =>
         responseFuture.flatMap((resp: HttpResponse) => Unmarshal(resp.entity).to[String]),
         timeout
       )
+      /* Reference - https://www.baeldung.com/scala/circe-json*/
       /* parse the result fetched from lambda*/
       val parseResult: Either[ParsingFailure, Json] = parse(responseAsString)
       val ans : String = parseResult match {
@@ -91,7 +93,7 @@ class gRPCServer(executionContext: ExecutionContext) { self =>
           firstNumber.flatten.flatMap(_.toInt).get.toString
       }
       logger.info("The ansValue from case is" + ans)
-      val reply = lambdaResponse(message = ans) 
+      val reply = lambdaResponse(message = ans)
       Future.successful(reply) /* return the protobuf response */
     }
   }

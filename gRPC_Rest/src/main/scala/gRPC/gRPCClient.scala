@@ -10,7 +10,7 @@ import protobuf.TimeCheck.{checkLogsGrpc, lambdaRequest}
 import scala.concurrent.ExecutionContext
 import java.util.concurrent.TimeUnit
 
-
+/* Reference - https://scalapb.github.io/docs/grpc */
 /* The is a grpc client which communicates with the grpc server using protobufs*/
 object gRPCClient {
 

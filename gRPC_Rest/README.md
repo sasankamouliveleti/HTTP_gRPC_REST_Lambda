@@ -24,7 +24,7 @@
 <h3>Flow diagram and project structure:</h3>
 <p>The following flow diagram depicts the architecture of the project</p>
 
-insert-flow diagram
+<img src="homework2.png"/>
 
 Explanation of the architecture intially the gRPC client gets an input of a timestamp and the gRPC client makes a request to gRPC server using protobuf and gRPC server in turns make call to REST API exposed by API Gateway calling lambda and gets a bool value telling whether the timestamp is present in the log file or not. The Http client is implemented using AkkaHTTP also makes a call to lambda with a timestamp and delta and gets a boolvalue and a list of MD5 hash values.
 
@@ -98,7 +98,12 @@ Now the logs are ready.
 
 <h4>Explanation of code behind lambda function</h4>
 
-
+<p>The lambda function takes 4 query parameters - type, inputtimestamp, regex, delta. The program checks for the type
+and exceutes according to the type of functionality. The first type where we check whether the given time stamp
+is in the log file or not. Inorder to perform this task we make use of binary search which runs in O(logn) time
+complexity. The second type where we have to return MD5 hash values if the given timestamp is in log file, if not
+we can return 404 status. To know the start log and end log in the log file we perform binary search with start time
+and end time of the time interval given.</p>
 
 <h3>Creation of API Endpoint for exposing lambda function as a Restful Service</h3>
 

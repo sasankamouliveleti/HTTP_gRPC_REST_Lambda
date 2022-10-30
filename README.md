@@ -12,7 +12,7 @@
 
 <p style="font-size: 20px">The detailed explanation of the log file generation, algorithm used, implementation of clients and lambda function are discussed below.</p>
 
-<p style="font-size: 20px">And the explanation video is linked <a href="" target="_blank">here.</a></p>
+<p style="font-size: 20px">And the explanation video is linked <a href="https://youtu.be/qGdTAYKOGKY" target="_blank">here.</a></p>
 
 <h3>Environment and Dependencies used to set up this project</h3>
 <ul>

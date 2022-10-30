@@ -5,7 +5,7 @@ import hashlib
 from datetime import datetime, timedelta
 import math
 
-
+# Binary search method which retrieves the start index and end index of the given time interval
 def binarySearchSearchForType2(allLogs, starTimeVal, endTimeVal):
     low = 0
     high = len(allLogs) - 1
@@ -22,7 +22,7 @@ def binarySearchSearchForType2(allLogs, starTimeVal, endTimeVal):
             return [low, high]
     return []
 
-
+# Binary search to know whether the given timestamp is in the log file or not
 def binarySearchForType1(allLogs, searchTimeStamp):
     low = 0
     high = len(allLogs) - 1
@@ -38,6 +38,7 @@ def binarySearchForType1(allLogs, searchTimeStamp):
             low = mid + 1
     return False
 
+# This method builds and returns the response
 def buildResponse(statusCode, typeOfFunc, boolValue, hashList = []):
     response = {}
     response["boolTimeStamp"] = boolValue
@@ -53,21 +54,22 @@ def buildResponse(statusCode, typeOfFunc, boolValue, hashList = []):
 
 
 def lambda_handler(event, context):
-    s3 = boto3.resource('s3')
-    bucket_name = s3.Bucket('ec2-logs-mouli')
+    s3 = boto3.resource('s3') # define the resource 
+    bucket_name = s3.Bucket('ec2-logs-mouli') #point to the bucket where logs are stored
 
     try:
-        inputTimeFromReq = event["queryStringParameters"]["timestamp"]
+        inputTimeFromReq = event["queryStringParameters"]["timestamp"] # retrieve the timestamp from query parameteres
         inputTimeVal = datetime.strptime(inputTimeFromReq, "%H:%M:%S.%f")
 
         print(inputTimeVal)
 
-        inputRegex = event["queryStringParameters"]["regex"]
+        inputRegex = event["queryStringParameters"]["regex"] # retrieve the regex from query parameteres
 
-        inputDelta = event["queryStringParameters"]["delta"]
+        inputDelta = event["queryStringParameters"]["delta"] # retrieve the delta from query parameteres
 
-        functionalityType = event["queryStringParameters"]["type"]
+        functionalityType = event["queryStringParameters"]["type"] # retrieve the type from query parameteres
 
+        # case when we only need to know whether the timestamp is present in the log file or not
         if(functionalityType == "1"):
 
             for obj in bucket_name.objects.all():
@@ -88,6 +90,7 @@ def lambda_handler(event, context):
                     if(binarySearchForType1(allLogs, inputTimeVal)):
                         return buildResponse(200, "1", 1, [])
             return buildResponse(404, "1", 0, [])
+        # case when we need the md5 hashes
         elif(functionalityType == "2"):
             for obj in bucket_name.objects.all():
                 key = obj.key
@@ -119,8 +122,8 @@ def lambda_handler(event, context):
                         for logLine in allLogs[rangeVal[0]: rangeVal[1] + 1]:
                             if(re.search(inputRegex, logLine)):
                                 logVal = str(logLine)
-                                md5Val = hashlib.md5(logVal.encode())
-                                ansMD5.append(md5Val.hexdigest())
+                                md5Val = hashlib.md5(logVal.encode()) # Generate the hash value for the matched log
+                                ansMD5.append(md5Val.hexdigest()) # store all the hashes in a list.
                         print(ansMD5)
                         return buildResponse(200, "2", 1, ansMD5)
                     else:
@@ -128,6 +131,7 @@ def lambda_handler(event, context):
                 else:
                     continue
             return buildResponse(404, "2", 0, [])
+        # return if there is match of functionality
         else:
             headers = {}
             headers["Content-Type"] = 'application/json'

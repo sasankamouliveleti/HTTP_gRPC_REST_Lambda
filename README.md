@@ -177,7 +177,7 @@ The client 2 uses AkkaHTTP to make a GET request to the API endpoint in the foll
 
 https://34ymq6qdql.execute-api.us-east-2.amazonaws.com/test/checktimestamp?timestamp=23:18:26.0&type=2&regex="*"&delta=0:18:26.0
 
-Now let's run the client
+Now let's run the client, make sure you are in /gRPC_Rest directory.
 
 <ol>
 <li>First we will compile and test</li>

@@ -134,7 +134,7 @@ Now let's consume the Rest API created.
 
 <h3>gRPC Client - Server</h3>
 
-In order run the gRPC server and client, follow the following steps:
+The gRPC framework uses protobuf inorder to communicate between nodes. The protobuf for this client and server is defined as TimeCheck.proto. In order run the gRPC server and client, follow the following steps:
 
 <ol>
 <li>Clone this repository and change directory to gRPC_Rest</li>
@@ -209,6 +209,16 @@ sbt "runMain Client2.AkkaHttpClient 23:20:00.142 0:0:16.0"
 "7ae5da82d8439377fba6fea20b0c2b1e"
 ])
 ```
+</ol>
+
+<h3>Test cases</h3>
+<p>The test cases are written in MRTesterClass under src/test/scala and the test cases are as follows</p>
+<ol>
+<li>To get correct endpoint defined in application config</li>
+<li>To get correct port for gRPC connected in application config</li>
+<li>To check the validity of the given input timestamp and delta</li>
+<li>To return correct URL formed for rest request</li>
+<li>To check whether the give timestamp present or not test</li>
 </ol>
 
 

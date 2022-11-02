@@ -9,7 +9,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 class gRPCLambdaHttpTester extends AnyFlatSpec with Matchers {
   behavior of "Various Constants and Methods"
 
-  it should "get correct defined in application config" in {
+  it should "get correct endpoint defined in application config" in {
     val getUrl = Constants.lambdaEndpoint
     val config: Config = ConfigFactory.load("application.conf").getConfig("applicationConfigParams")
     val lambdaEndpoint: String = config.getString("lambdaEndpoint")
